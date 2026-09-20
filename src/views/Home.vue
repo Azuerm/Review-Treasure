@@ -30,6 +30,8 @@ const libraryStats = computed(() => {
 const allStats = computed(() => store.getAllStats())
 const allWrongCount = computed(() => store.getAllWrongCards().length)
 const allFavCount = computed(() => store.getAllFavoriteCards().length)
+const allFuzzyCount = computed(() => allStats.value.fuzzy)
+const allMasteredCount = computed(() => allStats.value.learned)
 
 const todayProgress = computed(() => {
   return Math.min(100, Math.round((todayLog.value.count / dailyGoal.value) * 100))
@@ -68,32 +70,40 @@ function goToReviewAll() {
 }
 
 function goToWrongBook() {
-  router.push({ name: 'wrongBookAll' })
+  router.push({ name: 'cardListAll', params: { listType: 'wrong' } })
 }
 
 function goToWrongBookLib(libId) {
-  router.push({ name: 'wrongBook', params: { libraryId: libId } })
+  router.push({ name: 'cardList', params: { listType: 'wrong', libraryId: libId } })
 }
 
 function goToFavorites() {
-  router.push({ name: 'favoritesAll' })
+  router.push({ name: 'cardListAll', params: { listType: 'favorites' } })
 }
 
 function goToFavoritesLib(libId) {
-  router.push({ name: 'favorites', params: { libraryId: libId } })
+  router.push({ name: 'cardList', params: { listType: 'favorites', libraryId: libId } })
 }
 
 function goToCalendar() {
   router.push({ name: 'calendar' })
 }
 
+function goToFuzzyList() {
+  router.push({ name: 'cardListAll', params: { listType: 'fuzzy' } })
+}
+
+function goMasteredList() {
+  router.push({ name: 'cardListAll', params: { listType: 'mastered' } })
+}
+
 function getScoreColor(score) {
-  const colors = { 0: '#ee0a24', 1: '#ff976a', 2: '#07c160', 3: '#1989fa' }
+  const colors = { 0: '#ee0a24', 1: '#ff976a', 2: '#07c160' }
   return colors[score] || '#969799'
 }
 
 function getScoreText(score) {
-  const texts = { 0: '未学习', 1: '模糊', 2: '已掌握', 3: '完全掌握' }
+  const texts = { 0: '未学习', 1: '模糊', 2: '已掌握' }
   return texts[score] || '未学习'
 }
 </script>
@@ -110,14 +120,14 @@ function getScoreText(score) {
       <div class="stats-detail">
         <van-tag type="danger" size="medium">未学习 {{ allStats.notLearned }}</van-tag>
         <van-tag type="warning" size="medium">模糊 {{ allStats.fuzzy }}</van-tag>
-        <van-tag type="success" size="medium">已掌握 {{ allStats.learned + allStats.mastered }}</van-tag>
+        <van-tag type="success" size="medium">已掌握 {{ allStats.learned }}</van-tag>
       </div>
       <div class="stats-action" v-if="allStats.total > 0">
         <van-button type="primary" size="small" round>混合复习</van-button>
       </div>
     </div>
 
-    <div class="today-progress-card" v-if="allStats.total > 0">
+    <div class="today-progress-card" v-if="allStats.total > 0" @click="goToCalendar">
       <div class="today-info">
         <span class="today-title">今日进度</span>
         <span class="today-num">{{ todayLog.count }} / {{ dailyGoal }}</span>
@@ -137,9 +147,19 @@ function getScoreText(score) {
         <span class="action-label">收藏</span>
         <van-tag v-if="allFavCount > 0" type="warning" size="mini">{{ allFavCount }}</van-tag>
       </div>
-      <div class="action-item" @click="goToCalendar">
-        <div class="action-icon success">#</div>
-        <span class="action-label">打卡</span>
+      <div class="action-item" @click="goToFuzzyList">
+        <div class="action-icon fuzzy">
+          <span>~</span>
+        </div>
+        <span class="action-label">模糊</span>
+        <van-tag v-if="allFuzzyCount > 0" type="warning" size="mini">{{ allFuzzyCount }}</van-tag>
+      </div>
+      <div class="action-item" @click="goMasteredList">
+        <div class="action-icon success">
+          <span>✓</span>
+        </div>
+        <span class="action-label">掌握</span>
+        <van-tag v-if="allMasteredCount > 0" type="success" size="mini">{{ allMasteredCount }}</van-tag>
       </div>
     </div>
 
@@ -176,9 +196,6 @@ function getScoreText(score) {
           </span>
           <span class="stat-item" :style="{ color: getScoreColor(2) }">
             <span class="stat-num">{{ lib.stats.learned }}</span> 掌握
-          </span>
-          <span class="stat-item" :style="{ color: getScoreColor(3) }">
-            <span class="stat-num">{{ lib.stats.mastered }}</span> 精通
           </span>
         </div>
 
@@ -330,6 +347,7 @@ function getScoreText(score) {
   padding: 12px 16px;
   background: white;
   border-radius: 12px;
+  cursor: pointer;
 }
 
 .today-info {
@@ -390,6 +408,10 @@ function getScoreText(score) {
 
 .action-icon.success {
   background: linear-gradient(135deg, #07c160, #4cd964);
+}
+
+.action-icon.fuzzy {
+  background: linear-gradient(135deg, #ff976a, #ffb74d);
 }
 
 .action-label {

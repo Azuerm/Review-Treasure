@@ -6,6 +6,22 @@ export const useLibraryStore = defineStore('library', () => {
   const libraries = ref(storage.getLibraries())
   const currentLibraryId = ref(null)
 
+  // 数据迁移：将旧版 score=3（精通）统一为 score=2（掌握）
+  function migrateOldScores() {
+    for (const lib of libraries.value) {
+      const cards = storage.getCards(lib.id)
+      let changed = false
+      for (const card of cards) {
+        if (card.score === 3) {
+          card.score = 2
+          changed = true
+        }
+      }
+      if (changed) storage.saveCards(lib.id, cards)
+    }
+  }
+  migrateOldScores()
+
   const currentLibrary = computed(() =>
     libraries.value.find(l => l.id === currentLibraryId.value)
   )
@@ -67,6 +83,14 @@ export const useLibraryStore = defineStore('library', () => {
     return storage.getAllFavoriteCards()
   }
 
+  function getCardsByScore(libId, score) {
+    return storage.getCards(libId).filter(c => c.score === score)
+  }
+
+  function getAllCardsByScore(score) {
+    return storage.getAllCards().filter(c => c.score === score)
+  }
+
   function getDueCards(libId) {
     return storage.getCards(libId)
       .filter(c => c.score < 2)
@@ -85,22 +109,20 @@ export const useLibraryStore = defineStore('library', () => {
       total: cards.length,
       notLearned: cards.filter(c => c.score === 0).length,
       fuzzy: cards.filter(c => c.score === 1).length,
-      learned: cards.filter(c => c.score === 2).length,
-      mastered: cards.filter(c => c.score === 3).length
+      learned: cards.filter(c => c.score >= 2).length
     }
   }
 
   function getAllStats() {
-    let total = 0, notLearned = 0, fuzzy = 0, learned = 0, mastered = 0
+    let total = 0, notLearned = 0, fuzzy = 0, learned = 0
     for (const lib of libraries.value) {
       const s = getLibraryStats(lib.id)
       total += s.total
       notLearned += s.notLearned
       fuzzy += s.fuzzy
       learned += s.learned
-      mastered += s.mastered
     }
-    return { total, notLearned, fuzzy, learned, mastered }
+    return { total, notLearned, fuzzy, learned }
   }
 
   function getTodayLog() {
@@ -139,6 +161,7 @@ export const useLibraryStore = defineStore('library', () => {
     updateCardScore, updateCard, toggleFavorite,
     getWrongCards, getAllWrongCards,
     getFavoriteCards, getAllFavoriteCards,
+    getCardsByScore, getAllCardsByScore,
     getDueCards, getAllDueCards,
     getLibraryStats, getAllStats,
     getTodayLog, addStudyLog, getStudyLogs,

@@ -5,7 +5,6 @@ export function parseMarkdown(mdContent, libraryType = 'tech') {
   const cards = []
   let currentQuestion = null
   let currentAnswerLines = []
-  let index = 0
 
   function flushCard() {
     if (currentQuestion) {
@@ -17,15 +16,15 @@ export function parseMarkdown(mdContent, libraryType = 'tech') {
         ? detectTags(currentQuestion + ' ' + answer)
         : detectTags(currentQuestion + ' ' + answer)
       cards.push({
-        id: generateId(currentQuestion, index),
+        id: generateId(currentQuestion),
         question: currentQuestion.trim(),
         answer: answer || '',
         tags,
         score: 0,
         reviewCount: 0,
-        lastReview: null
+        lastReview: null,
+        favorite: false
       })
-      index++
     }
     currentQuestion = null
     currentAnswerLines = []

@@ -31,8 +31,8 @@ const title = computed(() => {
   return (library.value?.name || '') + ' - 收藏'
 })
 
-const scoreLabels = ['不会', '模糊', '掌握', '完全掌握']
-const scoreTypes = ['danger', 'warning', 'success', 'primary']
+const scoreLabels = ['不会', '模糊', '掌握']
+const scoreTypes = ['danger', 'warning', 'success']
 
 onMounted(() => {
   loadCards()
@@ -180,7 +180,6 @@ function getScoreType(score) {
           <van-button type="danger" round size="small" @click="rateScore(0)" class="score-btn">不会</van-button>
           <van-button type="warning" round size="small" @click="rateScore(1)" class="score-btn">模糊</van-button>
           <van-button type="success" round size="small" @click="rateScore(2)" class="score-btn">掌握</van-button>
-          <van-button type="primary" round size="small" @click="rateScore(3)" class="score-btn">精通</van-button>
         </div>
       </div>
 

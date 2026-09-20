@@ -31,12 +31,20 @@ const progress = computed(() => {
 })
 
 const title = computed(() => {
-  if (props.reviewAll) return '混合复习'
-  return library.value?.name || '复习'
+  let base = ''
+  if (props.reviewAll) {
+    base = '混合复习'
+  } else {
+    base = library.value?.name || '复习'
+  }
+  if (shuffleMode.value) {
+    base += ' - 随机模式'
+  }
+  return base
 })
 
-const scoreLabels = ['不会', '模糊', '掌握', '完全掌握']
-const scoreTypes = ['danger', 'warning', 'success', 'primary']
+const scoreLabels = ['不会', '模糊', '掌握']
+const scoreTypes = ['danger', 'warning', 'success']
 
 let startTime = 0
 let reviewCount = 0
@@ -55,8 +63,15 @@ onUnmounted(() => {
 })
 
 function loadCards() {
+  const cardId = route.query.cardId
   let cards
-  if (props.reviewAll) {
+  if (cardId) {
+    if (props.reviewAll) {
+      cards = store.getAllCards()
+    } else {
+      cards = store.getCards(libraryId.value)
+    }
+  } else if (props.reviewAll) {
     cards = store.getAllDueCards()
     if (cards.length === 0) cards = store.getAllCards()
   } else {
@@ -68,7 +83,6 @@ function loadCards() {
   finished.value = false
   isFavorite.value = currentCard.value?.favorite || false
 
-  const cardId = route.query.cardId
   if (cardId) {
     const idx = allCards.value.findIndex(c => c.id === cardId)
     if (idx !== -1) {
@@ -176,9 +190,6 @@ function getScoreType(score) {
 <template>
   <div class="review-page">
     <van-nav-bar :title="title" left-arrow @click-left="router.back()">
-      <template #left>
-        <van-icon name="arrow-left" size="20" />
-      </template>
       <template #right>
         <van-icon :name="shuffleMode ? 'shuffle' : 'bars'" size="20" @click="toggleShuffle" style="margin-right: 12px;" />
         <van-icon name="search" size="20" @click="goSearch" />
@@ -232,7 +243,6 @@ function getScoreType(score) {
           <van-button type="danger" round size="small" @click="rateScore(0)" class="score-btn">不会</van-button>
           <van-button type="warning" round size="small" @click="rateScore(1)" class="score-btn">模糊</van-button>
           <van-button type="success" round size="small" @click="rateScore(2)" class="score-btn">掌握</van-button>
-          <van-button type="primary" round size="small" @click="rateScore(3)" class="score-btn">精通</van-button>
         </div>
       </div>
 

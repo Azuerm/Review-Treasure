@@ -17,44 +17,16 @@ const libraryStatsList = computed(() => {
 
 const masteredPercent = computed(() => {
   if (allStats.value.total === 0) return 0
-  return Math.round(((allStats.value.learned + allStats.value.mastered) / allStats.value.total) * 100)
-})
-
-const studyLogs = computed(() => store.getStudyLogs())
-
-const totalStudyDays = computed(() => studyLogs.value.length)
-
-const totalReviewed = computed(() => studyLogs.value.reduce((s, l) => s + l.count, 0))
-
-const totalDurationText = computed(() => {
-  const secs = studyLogs.value.reduce((s, l) => s + (l.duration || 0), 0)
-  const h = Math.floor(secs / 3600)
-  const m = Math.floor((secs % 3600) / 60)
-  if (h > 0) return h + '小时' + m + '分钟'
-  return m + '分钟'
-})
-
-const streak = computed(() => {
-  const dates = studyLogs.value.map(l => l.date).sort().reverse()
-  if (dates.length === 0) return 0
-  let count = 0
-  const d = new Date()
-  for (let i = 0; i < 365; i++) {
-    const ds = d.toISOString().slice(0, 10)
-    if (dates.includes(ds)) count++
-    else if (i > 0) break
-    d.setDate(d.getDate() - 1)
-  }
-  return count
+  return Math.round((allStats.value.learned / allStats.value.total) * 100)
 })
 
 function getTagType(score) {
-  const map = { 0: '#ee0a24', 1: '#ff976a', 2: '#07c160', 3: '#1989fa' }
+  const map = { 0: '#ee0a24', 1: '#ff976a', 2: '#07c160' }
   return map[score] || '#969799'
 }
 
 function getScoreText(score) {
-  const map = { 0: '未学习', 1: '模糊', 2: '已掌握', 3: '完全掌握' }
+  const map = { 0: '未学习', 1: '模糊', 2: '已掌握' }
   return map[score] || '未学习'
 }
 
@@ -122,33 +94,6 @@ function importBackup(event) {
             <span>已掌握</span>
             <span class="detail-num">{{ allStats.learned }}</span>
           </div>
-          <div class="detail-row">
-            <span class="detail-dot" style="background: #1989fa;"></span>
-            <span>完全掌握</span>
-            <span class="detail-num">{{ allStats.mastered }}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="study-summary">
-      <div class="section-title">学习概况</div>
-      <div class="summary-grid">
-        <div class="summary-cell">
-          <span class="summary-val">{{ streak }}</span>
-          <span class="summary-lbl">连续天数</span>
-        </div>
-        <div class="summary-cell">
-          <span class="summary-val">{{ totalStudyDays }}</span>
-          <span class="summary-lbl">学习天数</span>
-        </div>
-        <div class="summary-cell">
-          <span class="summary-val">{{ totalReviewed }}</span>
-          <span class="summary-lbl">总复习题数</span>
-        </div>
-        <div class="summary-cell">
-          <span class="summary-val">{{ totalDurationText }}</span>
-          <span class="summary-lbl">总学习时长</span>
         </div>
       </div>
     </div>
@@ -166,13 +111,11 @@ function importBackup(event) {
           <span class="lib-stat-total">{{ lib.stats.total }} 题</span>
         </div>
         <div class="lib-stat-bar">
-          <div class="bar-segment" :style="{ width: (lib.stats.mastered / Math.max(lib.stats.total, 1) * 100) + '%', background: '#1989fa' }"></div>
           <div class="bar-segment" :style="{ width: (lib.stats.learned / Math.max(lib.stats.total, 1) * 100) + '%', background: '#07c160' }"></div>
           <div class="bar-segment" :style="{ width: (lib.stats.fuzzy / Math.max(lib.stats.total, 1) * 100) + '%', background: '#ff976a' }"></div>
           <div class="bar-segment" :style="{ width: (lib.stats.notLearned / Math.max(lib.stats.total, 1) * 100) + '%', background: '#ee0a24' }"></div>
         </div>
         <div class="lib-stat-numbers">
-          <span style="color: #1989fa;">{{ lib.stats.mastered }} 精通</span>
           <span style="color: #07c160;">{{ lib.stats.learned }} 掌握</span>
           <span style="color: #ff976a;">{{ lib.stats.fuzzy }} 模糊</span>
           <span style="color: #ee0a24;">{{ lib.stats.notLearned }} 未学</span>
@@ -231,6 +174,8 @@ function importBackup(event) {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  height: 100%;
 }
 
 .circle-number {
@@ -322,38 +267,6 @@ function importBackup(event) {
   display: flex;
   justify-content: space-between;
   font-size: 12px;
-}
-
-.study-summary {
-  padding: 0 12px;
-  margin-bottom: 12px;
-}
-
-.summary-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-}
-
-.summary-cell {
-  background: white;
-  border-radius: 12px;
-  padding: 12px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-.summary-val {
-  font-size: 20px;
-  font-weight: bold;
-  color: #1989fa;
-}
-
-.summary-lbl {
-  font-size: 12px;
-  color: #969799;
 }
 
 .data-section {

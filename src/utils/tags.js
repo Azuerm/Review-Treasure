@@ -22,9 +22,9 @@ export function detectTags(text) {
   return tags
 }
 
-export function generateId(title, index) {
+export function generateId(title) {
   let hash = 0
-  const str = title + index
+  const str = title
   for (let i = 0; i < str.length; i++) {
     const char = str.charCodeAt(i)
     hash = ((hash << 5) - hash) + char

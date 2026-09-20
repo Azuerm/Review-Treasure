@@ -71,6 +71,17 @@ const routes = [
     name: 'stats',
     component: () => import('../views/Stats.vue'),
     meta: { showTabbar: true }
+  },
+  {
+    path: '/list/:listType',
+    name: 'cardListAll',
+    component: () => import('../views/CardList.vue'),
+    props: { allMode: true }
+  },
+  {
+    path: '/list/:listType/:libraryId',
+    name: 'cardList',
+    component: () => import('../views/CardList.vue')
   }
 ]
 
