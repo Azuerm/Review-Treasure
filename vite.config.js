@@ -5,7 +5,7 @@ import { VantResolver } from '@vant/auto-import-resolver'
 import { VitePWA } from 'vite-plugin-pwa'
 
 export default defineConfig({
-  base: '/frontend-review/',
+  base: '/Review-Treasure/',
   plugins: [
     vue(),
     Components({

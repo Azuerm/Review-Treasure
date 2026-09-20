@@ -6,7 +6,7 @@
   "background_color": "#f7f8fa",
   "display": "standalone",
   "orientation": "portrait",
-  "start_url": "/frontend-review/",
+  "start_url": "/Review-Treasure/",
   "icons": [
     {
       "src": "pwa-192x192.svg",
