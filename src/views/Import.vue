@@ -157,8 +157,10 @@ function getTagType(tag) {
 <style scoped>
 .import-page {
   background: #f7f8fa;
-  min-height: 100vh;
+  height: 100%;
+  overflow-y: auto;
   padding-bottom: calc(50px + env(safe-area-inset-bottom, 0px));
+  -webkit-overflow-scrolling: touch;
 }
 
 .import-section {

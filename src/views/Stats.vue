@@ -204,8 +204,10 @@ function importBackup(event) {
 <style scoped>
 .stats-page {
   background: #f7f8fa;
-  min-height: 100vh;
+  height: 100%;
+  overflow-y: auto;
   padding-bottom: calc(66px + env(safe-area-inset-bottom, 0px));
+  -webkit-overflow-scrolling: touch;
 }
 
 .overview-section {

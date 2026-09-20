@@ -161,8 +161,10 @@ function saveGoal() {
 <style scoped>
 .calendar-page {
   background: #f7f8fa;
-  min-height: 100vh;
+  height: 100%;
+  overflow-y: auto;
   padding-bottom: 16px;
+  -webkit-overflow-scrolling: touch;
 }
 .today-card {
   margin: 12px;

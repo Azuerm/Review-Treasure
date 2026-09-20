@@ -29,13 +29,19 @@ const active = computed({
   box-sizing: border-box;
 }
 
+html, body, #app {
+  height: 100%;
+  overflow: hidden;
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
   background-color: #f7f8fa;
   -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
 }
 
 .app-container {
-  min-height: 100vh;
+  height: 100%;
 }
 </style>
